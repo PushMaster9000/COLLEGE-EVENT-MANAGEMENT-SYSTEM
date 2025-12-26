@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College EventHub - Database Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8f9fa;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            color: var(--accent);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 4rem 0;
+            background: linear-gradient(rgba(67, 97, 238, 0.9), rgba(58, 12, 163, 0.9)), url('https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Database Schema Section */
+        .schema {
+            padding: 4rem 0;
+            background-color: white;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .tables-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .table-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border-left: 4px solid var(--primary);
+        }
+
+        .table-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .table-card h3 i {
+            margin-right: 10px;
+            color: var(--accent);
+        }
+
+        .table-attributes {
+            list-style: none;
+        }
+
+        .table-attributes li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .attr-name {
+            font-weight: 500;
+        }
+
+        .attr-type {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 0;
+            background-color: #f8fafc;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        /* Events Section */
+        .events {
+            padding: 4rem 0;
+            background-color: white;
+        }
+
+        .events-filter {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            background-color: var(--light);
+            border: 1px solid #cbd5e1;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .event-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .event-image {
+            height: 180px;
+            background-color: var(--primary);
+            background-size: cover;
+            background-position: center;
+        }
+
+        .event-content {
+            padding: 1.5rem;
+        }
+
+        .event-date {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .event-content h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .event-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Dashboard Section */
+        .dashboard {
+            padding: 2rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            color: var(--gray);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 3rem 0 1.5rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-column ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-column ul li a:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #374151;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        /* Fixed Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem 1rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            background: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .modal-header h2 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background-color: #f1f5f9;
+            color: var(--danger);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            padding: 0 2rem;
+        }
+
+        .form-group:last-child {
+            padding-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        /* User Info Styles */
+        .user-info {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Organiser Dashboard Styles */
+        .organiser-event-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .organiser-event-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .organiser-event-card h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--primary);
+        }
+
+        .event-stats {
+            display: flex;
+            gap: 1rem;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+            color: var(--gray);
+            flex-wrap: wrap;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            align-items: center;
+        }
+
+        .event-actions .btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: white;
+        }
+
+        /* Organiser Info Section */
+        .organiser-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #3a0ca3;
+        }
+
+        .organiser-info h3 {
+            color: #3a0ca3;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 20px;
+            }
+
+            .auth-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .event-stats {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .event-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .event-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-database"></i>
+                    <span>EventHub DB</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#home" class="active">Home</a></li>
+                        <li><a href="#schema">Database Schema</a></li>
+                        <li><a href="#events">Events</a></li>
+                        <li><a href="#dashboard">Dashboard</a></li>
+                    </ul>
+                </nav>
+                <div class="auth-buttons">
+                    <!-- Student Section -->
+                    <div class="user-info" id="userInfo">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <span id="userName">User</span>
+                        <button class="btn btn-outline" id="logoutBtn">Logout</button>
+                    </div>
+                    
+                    <!-- Organiser Section -->
+                    <div class="user-info" id="organiserInfo" style="display: none;">
+                        <div class="user-avatar" id="organiserAvatar" style="background: #3a0ca3;">O</div>
+                        <span id="organiserNameHeader">Organiser</span>
+                        <button class="btn btn-outline" id="organiserDashboardBtn">Dashboard</button>
+                        <button class="btn btn-outline" id="organiserLogoutHeaderBtn">Logout</button>
+                    </div>
+                    
+                    <!-- Login Buttons (when no one is logged in) -->
+                    <div id="guestButtons">
+                        <button class="btn btn-outline" id="loginBtn">Student Login</button>
+                        <button class="btn btn-outline" id="organiserLoginBtn" style="background: #3a0ca3; color: white;">Organiser Login</button>
+                        <button class="btn btn-primary" id="registerBtn">Student Register</button>
+                        <button class="btn btn-primary" id="organiserRegisterBtn" style="background: #3a0ca3; border-color: #3a0ca3;">Organiser Register</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>College Event Management System</h1>
+            <p>A comprehensive database-driven platform for managing college events, participants, and resources with MySQL backend.</p>
+            <button class="btn btn-primary" id="createEventBtn" style="display: none;">Create Event</button>
+        </div>
+    </section>
+
+    <!-- Database Schema Section -->
+    <section class="schema" id="schema">
+        <div class="container">
+            <div class="section-title">
+                <h2>Database Schema Design</h2>
+                <p>Our system uses a normalized relational database with multiple interconnected tables</p>
+            </div>
+            
+            <div class="tables-container">
+                <div class="table-card">
+                    <h3><i class="fas fa-users"></i> Users Table</h3>
+                    <ul class="table-attributes">
+                        <li><span class="attr-name">user_id</span> <span class="attr-type">INT (PK)</span></li>
+                        <li><span class="attr-name">name</span> <span class="attr-type">VARCHAR(100)</span></li>
+                        <li><span class="attr-name">email</span> <span class="attr-type">VARCHAR(100)</span></li>
+                        <li><span class="attr-name">password</span> <span class="attr-type">VARCHAR(255)</span></li>
+                        <li><span class="attr-name">role</span> <span class="attr-type">ENUM</span></li>
+                        <li><span class="attr-name">department</span> <span class="attr-type">VARCHAR(50)</span></li>
+                    </ul>
+                </div>
+                
+                <div class="table-card">
+                    <h3><i class="fas fa-calendar-alt"></i> Events Table</h3>
+                    <ul class="table-attributes">
+                        <li><span class="attr-name">event_id</span> <span class="attr-type">INT (PK)</span></li>
+                        <li><span class="attr-name">title</span> <span class="attr-type">VARCHAR(255)</span></li>
+                        <li><span class="attr-name">description</span> <span class="attr-type">TEXT</span></li>
+                        <li><span class="attr-name">date</span> <span class="attr-type">DATE</span></li>
+                        <li><span class="attr-name">time</span> <span class="attr-type">TIME</span></li>
+                        <li><span class="attr-name">location</span> <span class="attr-type">VARCHAR(255)</span></li>
+                    </ul>
+                </div>
+                
+                <div class="table-card">
+                    <h3><i class="fas fa-clipboard-list"></i> Registrations Table</h3>
+                    <ul class="table-attributes">
+                        <li><span class="attr-name">registration_id</span> <span class="attr-type">INT (PK)</span></li>
+                        <li><span class="attr-name">user_id</span> <span class="attr-type">INT (FK)</span></li>
+                        <li><span class="attr-name">event_id</span> <span class="attr-type">INT (FK)</span></li>
+                        <li><span class="attr-name">registration_date</span> <span class="attr-type">TIMESTAMP</span></li>
+                        <li><span class="attr-name">status</span> <span class="attr-type">ENUM</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Database Operations</h2>
+                <p>Key CRUD operations and database functionalities implemented in our system</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <h3>Create Operations</h3>
+                    <p>Add new users, events, registrations with proper validation.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Read Operations</h3>
+                    <p>Retrieve event details, user information with complex JOIN queries.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h3>Update Operations</h3>
+                    <p>Modify event details, user profiles with transaction support.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section class="events" id="events">
+        <div class="container">
+            <div class="section-title">
+                <h2>Upcoming Events</h2>
+                <p>Events retrieved from the database with filtering and search capabilities</p>
+            </div>
+            <div class="events-filter">
+                <button class="filter-btn active">All Events</button>
+                <button class="filter-btn">Technical</button>
+                <button class="filter-btn">Cultural</button>
+                <button class="filter-btn">Workshops</button>
+            </div>
+            <div class="events-grid" id="eventsContainer">
+                <!-- Events will be dynamically loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section class="dashboard" id="dashboard">
+        <div class="container">
+            <div class="section-title">
+                <h2>Database Dashboard</h2>
+                <p>Real-time statistics and data visualization from the MySQL database</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <h3 id="totalUsers">0</h3>
+                    <p>Total Users</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3 id="totalEvents">0</h3>
+                    <p>Active Events</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clipboard-check"></i>
+                    <h3 id="totalRegistrations">0</h3>
+                    <p>Total Registrations</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>EventHub DB</h3>
+                    <p>A database management system for college event management using MySQL, Node.js, and Express.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Database Links</h3>
+                    <ul>
+                        <li><a href="#schema">Schema Design</a></li>
+                        <li><a href="#dashboard">Data Dashboard</a></li>
+                        <li><a href="#events">Events</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> dbadmin@eventhub.edu</li>
+                        <li><i class="fas fa-database"></i> MySQL 8.0</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 EventHub DB - Database Management System Project. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login to EventHub</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                </div>
+            </form>
+            <p style="text-align: center; margin-top: 1rem; padding: 0 2rem 2rem 2rem;">
+                Don't have an account? <a href="#" id="switchToRegister">Register here</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create an Account</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Full Name</label>
+                    <input type="text" id="registerName" class="form-control" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerDepartment">Department</label>
+                    <select id="registerDepartment" class="form-control" required>
+                        <option value="">Select Department</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Information Technology">Information Technology</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Mechanical">Mechanical</option>
+                        <option value="Civil">Civil</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="registerYear">Year</label>
+                    <select id="registerYear" class="form-control" required>
+                        <option value="">Select Year</option>
+                        <option value="1">First Year</option>
+                        <option value="2">Second Year</option>
+                        <option value="3">Third Year</option>
+                        <option value="4">Fourth Year</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" class="form-control" placeholder="Create a password" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword">Confirm Password</label>
+                    <input type="password" id="registerConfirmPassword" class="form-control" placeholder="Confirm your password" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+                </div>
+            </form>
+            <p style="text-align: center; margin-top: 1rem; padding: 0 2rem 2rem 2rem;">
+                Already have an account? <a href="#" id="switchToLogin">Login here</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Organiser Login Modal -->
+    <div class="modal" id="organiserLoginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Organiser Login</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="organiserLoginForm">
+                <div class="form-group">
+                    <label for="organiserLoginEmail">Email</label>
+                    <input type="email" id="organiserLoginEmail" class="form-control" placeholder="Enter organiser email" required>
+                </div>
+                <div class="form-group">
+                    <label for="organiserLoginPassword">Password</label>
+                    <input type="password" id="organiserLoginPassword" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; background: #3a0ca3;">Login as Organiser</button>
+                </div>
+            </form>
+            <p style="text-align: center; margin-top: 1rem; padding: 0 2rem 2rem 2rem;">
+                Don't have an organiser account? <a href="#" id="switchToOrganiserRegister">Register here</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Organiser Register Modal -->
+    <div class="modal" id="organiserRegisterModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Organiser Registration</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="organiserRegisterForm">
+                <div class="form-group">
+                    <label for="organiserRegisterName">Full Name</label>
+                    <input type="text" id="organiserRegisterName" class="form-control" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="organiserRegisterEmail">Email</label>
+                    <input type="email" id="organiserRegisterEmail" class="form-control" placeholder="Enter organiser email" required>
+                </div>
+                <div class="form-group">
+                    <label for="organiserRegisterDepartment">Department</label>
+                    <select id="organiserRegisterDepartment" class="form-control" required>
+                        <option value="">Select Department</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Information Technology">Information Technology</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Mechanical">Mechanical</option>
+                        <option value="Civil">Civil</option>
+                        <option value="Administration">Administration</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="organiserRegisterPhone">Phone</label>
+                    <input type="tel" id="organiserRegisterPhone" class="form-control" placeholder="Enter phone number">
+                </div>
+                <div class="form-group">
+                    <label for="organiserRegisterPassword">Password</label>
+                    <input type="password" id="organiserRegisterPassword" class="form-control" placeholder="Create a password (min. 6 characters)" required>
+                </div>
+                <div class="form-group">
+                    <label for="organiserRegisterConfirmPassword">Confirm Password</label>
+                    <input type="password" id="organiserRegisterConfirmPassword" class="form-control" placeholder="Confirm your password" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; background: #3a0ca3;">Register as Organiser</button>
+                </div>
+            </form>
+            <p style="text-align: center; margin-top: 1rem; padding: 0 2rem 2rem 2rem;">
+                Already have an organiser account? <a href="#" id="switchToOrganiserLogin">Login here</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Organiser Dashboard Modal -->
+    <div class="modal" id="organiserDashboardModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Organiser Dashboard</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div style="padding: 0 2rem;">
+                <!-- Organiser Info -->
+                <div class="organiser-info">
+                    <h3>Welcome, <span id="organiserName">Organiser</span></h3>
+                    <p>Department: <span id="organiserDepartment">-</span></p>
+                    <button class="btn btn-outline" id="organiserLogoutBtn" style="margin-top: 0.5rem;">Logout</button>
+                </div>
+
+                <!-- Event Management Section -->
+                <div class="event-management">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3>My Events</h3>
+                        <button class="btn btn-primary" id="createNewEventBtn" style="background: #3a0ca3;">Create New Event</button>
+                    </div>
+                    
+                    <!-- Events List -->
+                    <div id="organiserEventsList" style="max-height: 400px; overflow-y: auto;">
+                        <!-- Events will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Event Modal -->
+    <div class="modal" id="createEventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Event</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="createEventForm">
+                <div class="form-group">
+                    <label for="eventTitle">Event Title</label>
+                    <input type="text" id="eventTitle" class="form-control" placeholder="Enter event title" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventDescription">Event Description</label>
+                    <textarea id="eventDescription" class="form-control" rows="3" placeholder="Describe your event" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="eventDate">Event Date</label>
+                    <input type="date" id="eventDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventTime">Event Time</label>
+                    <input type="time" id="eventTime" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventLocation">Location</label>
+                    <input type="text" id="eventLocation" class="form-control" placeholder="Enter event location" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventCategory">Category</label>
+                    <select id="eventCategory" class="form-control" required>
+                        <option value="">Select category</option>
+                        <option value="technical">Technical</option>
+                        <option value="cultural">Cultural</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="sports">Sports</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="eventCapacity">Capacity</label>
+                    <input type="number" id="eventCapacity" class="form-control" placeholder="Maximum participants" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; background: #3a0ca3;">Create Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Event Modal -->
+    <div class="modal" id="editEventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Event</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="editEventForm">
+                <input type="hidden" id="editEventId">
+                <div class="form-group">
+                    <label for="editEventTitle">Event Title</label>
+                    <input type="text" id="editEventTitle" class="form-control" placeholder="Enter event title" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEventDescription">Event Description</label>
+                    <textarea id="editEventDescription" class="form-control" rows="3" placeholder="Describe your event" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editEventDate">Event Date</label>
+                    <input type="date" id="editEventDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEventTime">Event Time</label>
+                    <input type="time" id="editEventTime" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEventLocation">Location</label>
+                    <input type="text" id="editEventLocation" class="form-control" placeholder="Enter event location" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEventCategory">Category</label>
+                    <select id="editEventCategory" class="form-control" required>
+                        <option value="">Select category</option>
+                        <option value="technical">Technical</option>
+                        <option value="cultural">Cultural</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="sports">Sports</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editEventCapacity">Capacity</label>
+                    <input type="number" id="editEventCapacity" class="form-control" placeholder="Maximum participants" required>
+                </div>
+                <div class="form-group" style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1; background: #3a0ca3;">Update Event</button>
+                    <button type="button" class="btn btn-danger" id="deleteEventBtn" style="flex: 1;">Delete Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const organiserLoginBtn = document.getElementById('organiserLoginBtn');
+        const organiserRegisterBtn = document.getElementById('organiserRegisterBtn');
+        const organiserDashboardBtn = document.getElementById('organiserDashboardBtn');
+        const createEventBtn = document.getElementById('createEventBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const organiserLogoutBtn = document.getElementById('organiserLogoutBtn');
+        const organiserLogoutHeaderBtn = document.getElementById('organiserLogoutHeaderBtn');
+
+        const userInfo = document.getElementById('userInfo');
+        const organiserInfo = document.getElementById('organiserInfo');
+        const guestButtons = document.getElementById('guestButtons');
+
+        const userName = document.getElementById('userName');
+        const userAvatar = document.getElementById('userAvatar');
+        const organiserNameHeader = document.getElementById('organiserNameHeader');
+        const organiserAvatar = document.getElementById('organiserAvatar');
+
+        // Modal Elements
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+        const organiserLoginModal = document.getElementById('organiserLoginModal');
+        const organiserRegisterModal = document.getElementById('organiserRegisterModal');
+        const organiserDashboardModal = document.getElementById('organiserDashboardModal');
+        const createEventModal = document.getElementById('createEventModal');
+        const editEventModal = document.getElementById('editEventModal');
+
+        // Close modal buttons
+        const closeModalButtons = document.querySelectorAll('.close-modal');
+
+        // Check authentication status
+        function checkAuthStatus() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const organiser = JSON.parse(localStorage.getItem('organiser'));
+            const userToken = localStorage.getItem('token');
+            const organiserToken = localStorage.getItem('organiserToken');
+            
+            // Hide all first
+            userInfo.style.display = 'none';
+            organiserInfo.style.display = 'none';
+            guestButtons.style.display = 'none';
+            
+            if (user && userToken && user.role === 'student') {
+                // Student is logged in
+                userInfo.style.display = 'flex';
+                userName.textContent = user.name;
+                userAvatar.textContent = user.name.charAt(0).toUpperCase();
+                createEventBtn.style.display = 'none';
+            } else if (organiser && organiserToken && organiser.role === 'organiser') {
+                // Organiser is logged in
+                organiserInfo.style.display = 'flex';
+                organiserNameHeader.textContent = organiser.name;
+                organiserAvatar.textContent = organiser.name.charAt(0).toUpperCase();
+                createEventBtn.style.display = 'inline-flex';
+            } else {
+                // No one is logged in
+                guestButtons.style.display = 'flex';
+                createEventBtn.style.display = 'none';
+            }
+        }
+
+        // Event Listeners
+        loginBtn.addEventListener('click', () => showModal(loginModal));
+        registerBtn.addEventListener('click', () => showModal(registerModal));
+        organiserLoginBtn.addEventListener('click', () => showModal(organiserLoginModal));
+        organiserRegisterBtn.addEventListener('click', () => showModal(organiserRegisterModal));
+        organiserDashboardBtn.addEventListener('click', () => {
+            showModal(organiserDashboardModal);
+            loadOrganiserEvents();
+        });
+
+        createEventBtn.addEventListener('click', () => {
+            const organiser = JSON.parse(localStorage.getItem('organiser'));
+            if (!organiser) {
+                alert('Please login as organiser to create events');
+                showModal(organiserLoginModal);
+                return;
+            }
+            showModal(createEventModal);
+        });
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', handleStudentLogout);
+        organiserLogoutBtn.addEventListener('click', handleOrganiserLogout);
+        organiserLogoutHeaderBtn.addEventListener('click', handleOrganiserLogout);
+
+        // Close modal functionality
+        closeModalButtons.forEach(button => {
+            button.addEventListener('click', hideAllModals);
+        });
+
+        // Modal switching
+        document.getElementById('switchToRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            hideAllModals();
+            showModal(registerModal);
+        });
+
+        document.getElementById('switchToLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            hideAllModals();
+            showModal(loginModal);
+        });
+
+        document.getElementById('switchToOrganiserRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            hideAllModals();
+            showModal(organiserRegisterModal);
+        });
+
+        document.getElementById('switchToOrganiserLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            hideAllModals();
+            showModal(organiserLoginModal);
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                hideAllModals();
+            }
+        });
+
+        // Form Submissions
+        document.getElementById('loginForm').addEventListener('submit', handleStudentLogin);
+        document.getElementById('registerForm').addEventListener('submit', handleStudentRegister);
+        document.getElementById('organiserLoginForm').addEventListener('submit', handleOrganiserLogin);
+        document.getElementById('organiserRegisterForm').addEventListener('submit', handleOrganiserRegister);
+        document.getElementById('createEventForm').addEventListener('submit', handleCreateEvent);
+        document.getElementById('editEventForm').addEventListener('submit', handleEditEvent);
+        document.getElementById('deleteEventBtn').addEventListener('click', handleDeleteEvent);
+
+        // New Event Button in Dashboard
+        document.getElementById('createNewEventBtn').addEventListener('click', () => {
+            hideAllModals();
+            showModal(createEventModal);
+        });
+
+        // Event Filtering
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const filter = button.textContent.toLowerCase();
+                loadEvents(filter === 'all events' ? 'all' : filter);
+            });
+        });
+
+        // Handler Functions
+        async function handleStudentLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    alert('Student login successful!');
+                    hideAllModals();
+                    checkAuthStatus();
+                    loadDashboardData();
+                } else {
+                    alert(data.error || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Login failed. Please try again.');
+            }
+        }
+
+        async function handleStudentRegister(e) {
+            e.preventDefault();
+            const formData = {
+                name: document.getElementById('registerName').value,
+                email: document.getElementById('registerEmail').value,
+                password: document.getElementById('registerPassword').value,
+                department: document.getElementById('registerDepartment').value,
+                year: parseInt(document.getElementById('registerYear').value)
+            };
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    alert('Student registration successful!');
+                    hideAllModals();
+                    checkAuthStatus();
+                    loadDashboardData();
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('Registration failed. Please try again.');
+            }
+        }
+
+        async function handleOrganiserLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('organiserLoginEmail').value;
+            const password = document.getElementById('organiserLoginPassword').value;
+            
+            console.log('Sending organiser login:', { email, password });
+            
+            try {
+                const response = await fetch('/api/organiser/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                console.log('Login response:', data);
+                
+                if (response.ok) {
+                    localStorage.setItem('organiserToken', data.token);
+                    localStorage.setItem('organiser', JSON.stringify(data.organiser));
+                    alert('Organiser login successful!');
+                    hideAllModals();
+                    checkAuthStatus();
+                    loadDashboardData();
+                } else {
+                    alert(data.error || 'Organiser login failed');
+                }
+            } catch (error) {
+                console.error('Organiser login error:', error);
+                alert('Organiser login failed. Please try again.');
+            }
+        }
+
+        async function handleOrganiserRegister(e) {
+            e.preventDefault();
+            const formData = {
+                name: document.getElementById('organiserRegisterName').value,
+                email: document.getElementById('organiserRegisterEmail').value,
+                password: document.getElementById('organiserRegisterPassword').value,
+                department: document.getElementById('organiserRegisterDepartment').value,
+                phone: document.getElementById('organiserRegisterPhone').value
+            };
+            
+            console.log('Sending organiser registration:', formData);
+            
+            try {
+                const response = await fetch('/api/organiser/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                console.log('Registration response:', data);
+                
+                if (response.ok) {
+                    localStorage.setItem('organiserToken', data.token);
+                    localStorage.setItem('organiser', JSON.stringify(data.organiser));
+                    alert('Organiser registration successful!');
+                    hideAllModals();
+                    checkAuthStatus();
+                    loadDashboardData();
+                } else {
+                    alert(data.error || 'Organiser registration failed');
+                }
+            } catch (error) {
+                console.error('Organiser registration error:', error);
+                alert('Organiser registration failed. Please try again.');
+            }
+        }
+
+        async function handleCreateEvent(e) {
+            e.preventDefault();
+            const organiser = JSON.parse(localStorage.getItem('organiser'));
+            
+            if (!organiser) {
+                alert('Please login as organiser to create events');
+                return;
+            }
+            
+            const formData = {
+                title: document.getElementById('eventTitle').value,
+                description: document.getElementById('eventDescription').value,
+                date: document.getElementById('eventDate').value,
+                time: document.getElementById('eventTime').value,
+                location: document.getElementById('eventLocation').value,
+                category: document.getElementById('eventCategory').value,
+                capacity: parseInt(document.getElementById('eventCapacity').value)
+            };
+            
+            try {
+                const response = await fetch('/api/events', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('organiserToken')}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Event created successfully!');
+                    hideAllModals();
+                    document.getElementById('createEventForm').reset();
+                    loadEvents('all');
+                    loadOrganiserEvents();
+                } else {
+                    alert(data.error || 'Event creation failed');
+                }
+            } catch (error) {
+                console.error('Event creation error:', error);
+                alert('Event creation failed. Please try again.');
+            }
+        }
+
+        async function handleEditEvent(e) {
+            e.preventDefault();
+            const eventId = document.getElementById('editEventId').value;
+            const formData = {
+                title: document.getElementById('editEventTitle').value,
+                description: document.getElementById('editEventDescription').value,
+                date: document.getElementById('editEventDate').value,
+                time: document.getElementById('editEventTime').value,
+                location: document.getElementById('editEventLocation').value,
+                category: document.getElementById('editEventCategory').value,
+                capacity: parseInt(document.getElementById('editEventCapacity').value)
+            };
+            
+            try {
+                const response = await fetch(`/api/events/${eventId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('organiserToken')}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Event updated successfully!');
+                    hideAllModals();
+                    loadEvents('all');
+                    loadOrganiserEvents();
+                } else {
+                    alert(data.error || 'Event update failed');
+                }
+            } catch (error) {
+                console.error('Event update error:', error);
+                alert('Event update failed. Please try again.');
+            }
+        }
+
+        async function handleDeleteEvent() {
+            const eventId = document.getElementById('editEventId').value;
+            
+            if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/events/${eventId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('organiserToken')}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Event deleted successfully!');
+                    hideAllModals();
+                    loadEvents('all');
+                    loadOrganiserEvents();
+                } else {
+                    alert(data.error || 'Event deletion failed');
+                }
+            } catch (error) {
+                console.error('Event deletion error:', error);
+                alert('Event deletion failed. Please try again.');
+            }
+        }
+
+        function handleStudentLogout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            checkAuthStatus();
+            alert('Logged out successfully');
+        }
+
+        function handleOrganiserLogout() {
+            localStorage.removeItem('organiserToken');
+            localStorage.removeItem('organiser');
+            hideAllModals();
+            checkAuthStatus();
+            alert('Organiser logged out successfully');
+        }
+
+        // Utility Functions
+        function showModal(modal) {
+            modal.style.display = 'flex';
+        }
+
+        function hideAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+
+        // Load organiser events for dashboard
+        async function loadOrganiserEvents() {
+            try {
+                const response = await fetch('/api/organiser/events', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('organiserToken')}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayOrganiserEvents(data.events);
+                    updateOrganiserInfo();
+                } else {
+                    console.error('Failed to load organiser events');
+                }
+            } catch (error) {
+                console.error('Error loading organiser events:', error);
+            }
+        }
+
+        function displayOrganiserEvents(events) {
+            const container = document.getElementById('organiserEventsList');
+            container.innerHTML = '';
+            
+            if (events.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--gray);">
+                        <p>No events created yet.</p>
+                        <p>Click "Create New Event" to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            events.forEach(event => {
+                const eventCard = document.createElement('div');
+                eventCard.className = 'organiser-event-card';
+                
+                const formattedDate = new Date(event.date).toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                eventCard.innerHTML = `
+                    <h4>${event.title}</h4>
+                    <p style="margin: 0.5rem 0; color: var(--gray);">${event.description}</p>
+                    <div class="event-stats">
+                        <span><i class="fas fa-calendar"></i> ${formattedDate} • ${event.time}</span>
+                        <span><i class="fas fa-map-marker-alt"></i> ${event.location}</span>
+                        <span><i class="fas fa-users"></i> ${event.confirmed_registrations || 0}/${event.capacity} registered</span>
+                    </div>
+                    <div class="event-actions">
+                        <button class="btn btn-primary" onclick="openEditEventModal(${event.event_id})">Edit</button>
+                        <span class="badge" style="background: ${getCategoryColor(event.category)}; color: white;">${event.category}</span>
+                    </div>
+                `;
+                
+                container.appendChild(eventCard);
+            });
+        }
+
+        function updateOrganiserInfo() {
+            const organiser = JSON.parse(localStorage.getItem('organiser'));
+            if (organiser) {
+                document.getElementById('organiserName').textContent = organiser.name;
+                document.getElementById('organiserDepartment').textContent = organiser.department;
+            }
+        }
+
+        function openEditEventModal(eventId) {
+            // For now, we'll just show a simple edit form
+            // In a real app, you'd fetch the event data first
+            document.getElementById('editEventId').value = eventId;
+            // You would populate other fields here with actual data
+            
+            hideAllModals();
+            showModal(editEventModal);
+        }
+
+        function getCategoryColor(category) {
+            const colors = {
+                technical: '#4361ee',
+                cultural: '#f72585',
+                workshop: '#4cc9f0',
+                sports: '#4ade80',
+                other: '#64748b'
+            };
+            return colors[category] || '#64748b';
+        }
+
+        // Existing functions
+        async function loadEvents(category = 'all') {
+            try {
+                const url = category === 'all' ? '/api/events' : `/api/events?category=${category}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayEvents(data.events);
+                } else {
+                    console.error('Failed to load events');
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        }
+
+        function displayEvents(events) {
+            const eventsContainer = document.getElementById('eventsContainer');
+            eventsContainer.innerHTML = '';
+            
+            if (events.length === 0) {
+                eventsContainer.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">No events found in this category.</p>';
+                return;
+            }
+            
+            events.forEach(event => {
+                const eventCard = document.createElement('div');
+                eventCard.className = 'event-card';
+                
+                const formattedDate = new Date(event.date).toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                eventCard.innerHTML = `
+                    <div class="event-image" style="background-image: url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')"></div>
+                    <div class="event-content">
+                        <span class="event-date">${formattedDate} • ${event.time}</span>
+                        <h3>${event.title}</h3>
+                        <p>${event.description}</p>
+                        <div class="event-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> ${event.location}</span>
+                            <span><i class="fas fa-user"></i> ${event.organizer_name}</span>
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="registerForEvent(${event.event_id})">
+                            Register Now
+                        </button>
+                    </div>
+                `;
+                
+                eventsContainer.appendChild(eventCard);
+            });
+        }
+
+        async function registerForEvent(eventId) {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user'));
+            
+            if (!token || !user) {
+                alert('Please login as student to register for events');
+                showModal(loginModal);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/events/${eventId}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Successfully registered for event!');
+                    loadEvents('all');
+                    loadDashboardData();
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('Registration failed. Please try again.');
+            }
+        }
+
+        async function loadDashboardData() {
+            try {
+                const eventsResponse = await fetch('/api/events');
+                if (eventsResponse.ok) {
+                    const eventsData = await eventsResponse.json();
+                    document.getElementById('totalEvents').textContent = eventsData.events.length;
+                }
+                
+                document.getElementById('totalUsers').textContent = '8+';
+                document.getElementById('totalRegistrations').textContent = '10+';
+                
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        // Initialize the page
+        checkAuthStatus();
+        loadEvents();
+        loadDashboardData();
+    </script>
+</body>
+</html>
